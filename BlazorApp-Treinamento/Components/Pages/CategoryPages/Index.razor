@@ -1,0 +1,43 @@
+﻿@page "/categories"
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using BlazorApp_Treinamento.Models
+@using BlazorApp_Treinamento.Data
+@implements IAsyncDisposable
+@inject IDbContextFactory<BlazorApp_Treinamento.Data.AppDbContext> DbFactory
+
+<PageTitle>Index</PageTitle>
+
+<h1>Index</h1>
+
+<p>
+    <a href="categories/create">Create New</a>
+</p>
+
+<QuickGrid Class="table" Items="context.Categories">
+    <PropertyColumn Property="category => category.Tittle" />
+    <PropertyColumn Property="category => category.Description" />
+
+    <TemplateColumn Context="category">
+        <a href="@($"categories/edit?id={category.Id}")">Edit</a> |
+        <a href="@($"categories/details?id={category.Id}")">Details</a> |
+        <a href="@($"categories/delete?id={category.Id}")">Delete</a>
+    </TemplateColumn>
+</QuickGrid>
+
+@code {
+    private AppDbContext context = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        context = await DbFactory.CreateDbContextAsync();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (context is not null)
+        {
+            await context.DisposeAsync();
+        }
+    }
+}
